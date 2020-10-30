@@ -269,6 +269,7 @@ for document in all_documents:
 			if total_length < item:
 				break
 		context = "".join(document[0:(index)])
+	print(context)
 
 	fake_samples = generate_text(context)
 
