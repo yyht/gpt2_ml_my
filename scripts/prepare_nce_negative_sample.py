@@ -224,12 +224,12 @@ def get_file_path(root_path, file_list, dir_list):
 			file_list.append(dir_file_path)
 
 
-if os.path.isdir(FLAGS.input_path):
+if os.path.isdir(args.input_path):
 	file_list, dir_list = [], []
-	get_file_path(FLAGS.input_path, file_list, dir_list)
+	get_file_path(args.input_path, file_list, dir_list)
 	print("==total file==", len(file_list))
 else:
-	file_list = [FLAGS.input_path]
+	file_list = [args.input_path]
 
 all_documents = [[]]
 
@@ -250,7 +250,7 @@ for input_file in file_list:
 
 			all_documents[-1].append(line)
 
-fwobj = tf.gfile.GFile(os.path.join(FLAGS.output_path, "_with_nce_output.txt"), "r")
+fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "r")
 
 for document in all_documents:
 	init_len = 0
