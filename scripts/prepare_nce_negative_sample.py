@@ -267,13 +267,13 @@ def process(document):
 
 	clean_original, fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
 
-	output_dict = {
-		"clean_original":"".join(clean_original),
-		"gpt_generated":fake_samples,
-		"probs":[np.log(prob[0]+1e-10).tolist() for prob in fake_probs]
-	}
-	fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
-
+	for fake_sample, prob in zip(fake_samples, fake_probs):
+		output_dict = {
+			"clean_original":"".join(clean_original),
+			"gpt_generated":fake_sample,
+			"probs":np.log(prob[0]+1e-10).tolist()
+		}
+		fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 
 for input_file in file_list:
 	document_len = 0
