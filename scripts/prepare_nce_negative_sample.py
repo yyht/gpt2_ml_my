@@ -270,7 +270,7 @@ for document in all_documents:
 		"original":"".join(document),
 		"gpt_generated":fake_samples
 	}
-	fwobj.write(json.dumps(output_dict)+"\n")
+	fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 fwobj.close()
 
 
