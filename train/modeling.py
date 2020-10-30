@@ -744,7 +744,7 @@ def initialize_from_context(initial_context, ignore_ids, news_config, p_for_topp
     }
 
 
-def sample(news_config: GroverConfig, initial_context, eos_token, min_len, ignore_ids=None, p_for_topp=0.95,
+def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_len, ignore_ids=None, p_for_topp=0.95,
            do_topk=False):
     """
     V1 version of: sample outputs from a model, and do it all at once
@@ -784,14 +784,12 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, ignor
         def cond(ctx, cache, probs):
             # ctx = tf.Print(ctx,[tf.shape(ctx)])
             is_eos = tf.reduce_all(tf.reduce_any(tf.equal(ctx[:,-1:], eos_token), axis=1))
-            sequence_length = tf.cast(tf.cast(get_shape_list(ctx)[1], dtype=tf.float32)/0.8, dtype=tf.int32)
-            is_len = tf.greater(get_shape_list(probs)[1], sequence_length)
-            # return tf.logical_not(is_eos)
-            # return tf.logical_not(tf.logical_and(is_eos, is_len))
-            return tf.logical_not(tf.logical_or(is_eos, is_len))
+            is_max_len = tf.greater(get_shape_list(probs)[1], max_len)
+            # is_min_len = tf.less(get_shape_list(probs)[1], min_len)
+            # length_cond = tf.logical_and(is_max_len, is_min_len)
+            return tf.logical_not(tf.logical_or(is_eos, is_max_len))
 
         sequence_length = tf.cast(tf.cast(get_shape_list(ctx)[1], dtype=tf.float32)/0.8, dtype=tf.int32)
-        print(sequence_length)
 
         tokens, cache, probs = tf.while_loop(
             cond=cond, body=body, maximum_iterations=72,

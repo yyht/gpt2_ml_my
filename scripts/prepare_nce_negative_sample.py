@@ -176,9 +176,12 @@ with graph.as_default():
 	p_for_topp = tf.placeholder(tf.float32, [batch_size_per_chunk])
 	eos_token = tf.placeholder(tf.int32, [])
 	min_len = tf.placeholder(tf.int32, [])
+	max_len = tf.placeholder(tf.int32, [])
 
 	tokens, probs = sample(news_config=news_config, initial_context=initial_context,
-							   eos_token=eos_token, min_len=min_len, ignore_ids=None, p_for_topp=p_for_topp,
+							   eos_token=eos_token, min_len=min_len, 
+							   max_len=max_len,
+							   ignore_ids=None, p_for_topp=p_for_topp,
 							   do_topk=False)
 	saver = tf.train.Saver()
 	saver.restore(sess, args.ckpt_fn)
@@ -205,7 +208,9 @@ def generate_text(text, ratio=0.8):
 			for chunk_i in range(num_chunks):
 				tokens_out, probs_out = sess.run([tokens, probs],
 												 feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
-															eos_token: args.eos_token, min_len: args.min_len,
+															eos_token: args.eos_token, 
+															min_len: args.min_len,
+															max_len: len(encoded),
 															p_for_topp: top_p[chunk_i]})
 
 				for t_i, p_i in zip(tokens_out, probs_out):
