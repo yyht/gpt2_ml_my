@@ -13,6 +13,9 @@ tpu_cluster = TPUClusterResolver(
     tpu=['albert2']).get_master()
 import numpy as np
 
+from tensorflow.contrib.tpu.python.tpu import tpu_function
+tpu_function.get_tpu_context().set_number_of_shards(1)
+
 from train.modeling import GroverModel, GroverConfig, sample
 from tokenization import tokenization
 
