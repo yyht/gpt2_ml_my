@@ -223,9 +223,12 @@ def get_file_path(root_path, file_list, dir_list):
 			file_list.append(dir_file_path)
 
 
-file_list, dir_list = [], []
-get_file_path(FLAGS.input_path, file_list, dir_list)
-print("==total file==", len(file_list))
+if os.path.isdir(FLAGS.input_path):
+	file_list, dir_list = [], []
+	get_file_path(FLAGS.input_path, file_list, dir_list)
+	print("==total file==", len(file_list))
+else:
+	file_list = [FLAGS.input_path]
 
 all_documents = [[]]
 
