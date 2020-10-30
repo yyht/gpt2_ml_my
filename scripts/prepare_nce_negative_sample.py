@@ -266,7 +266,9 @@ for document in all_documents:
 		context = "".join(document[0:(index+1)])
 
 	fake_samples = generate_text(context)
-	print(fake_samples)
+	for fake in fake_samples:
+		print(context, '==context==')
+		print(fake, '==fake==')
 	output_dict = {
 		"original":"".join(document),
 		"gpt_generated":fake_samples
