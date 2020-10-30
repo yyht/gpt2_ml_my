@@ -151,6 +151,14 @@ def extract_generated_target(output_tokens, tokenizer):
 		'end_ind': end_ind,
 	}
 
+import re
+def clean(text):
+	text = re.sub("(<p>)+", "", text)
+	text = re.sub("(</p>)+", "", text)
+	text = re.sub("""(<imgsrc="23857019472"/>)+""", "", text)
+	text = re.sub("(&nbsp)+", "", text)
+	return text
+
 args = parser.parse_args()
 proj_root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 vocab_file_path = os.path.join(proj_root_path, "tokenization/clue-vocab.txt")
@@ -195,6 +203,7 @@ def generate_text(text, ratio=0.8):
 		for i in range(args.samples):
 			print("Sample,", i + 1, " of ", args.samples)
 			line = tokenization.convert_to_unicode(text)
+			line = clean(line)
 			bert_tokens = tokenizer.tokenize(line)
 			encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
 			encoded_prefix = encoded[0:int(len(encoded)*ratio)]
@@ -263,7 +272,9 @@ def process(document):
 	}
 	fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 
+
 for input_file in file_list:
+	document_len = 0
 	with tf.gfile.GFile(input_file, "r") as reader:
 		while True:
 			line = reader.readline()
@@ -271,6 +282,7 @@ for input_file in file_list:
 			if not line:
 				print(all_documents[-1])
 				process(all_documents[-1])
+				document_len = 0
 				break
 			line = line.strip()
 			line = "".join(line.split(" "))
@@ -281,9 +293,16 @@ for input_file in file_list:
 				print(all_documents[-1])
 				process(all_documents[-1])
 				all_documents.append([])
+				document_len = 0
 				continue
-
-			all_documents[-1].append(line)
+			if len(line) + document_len < 508:
+				document_len += len(line)
+				all_documents[-1].append(line)
+			else:
+				process(all_documents[-1])
+				all_documents.append([])
+				document_len = 0
+				continue
 	
 fwobj.close()
 
