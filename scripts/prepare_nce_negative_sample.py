@@ -251,7 +251,7 @@ for input_file in file_list:
 			all_documents[-1].append(line)
 
 fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "w")
-
+print(all_documents)
 for document in all_documents:
 	init_len = 0
 	index = 0
@@ -263,7 +263,6 @@ for document in all_documents:
 		total_length = accum_len[-1] - 64
 		for index, item in enumerate(accum_len):
 			if total_length < item:
-				print(index)
 				break
 		context = "".join(document[0:(index+1)])
 
