@@ -262,7 +262,7 @@ for document in all_documents:
 	accum_len = np.cumsum([len(doc) for doc in document])
 
 	if accum_len[-1] <= 64:
-		context = "".join(document)[0:32]
+		context = "".join(document)[0:5]
 	else:
 		total_length = accum_len[-1] - 64
 		for index, item in enumerate(accum_len):
