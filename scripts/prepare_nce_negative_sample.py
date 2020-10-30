@@ -256,6 +256,9 @@ fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "
 for document in all_documents:
 	init_len = 0
 	index = 0
+	document = "".join(document)
+	sentences = re.split(r"([。!！?？；;])", document)
+	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 	accum_len = np.cumsum([len(doc) for doc in document])
 
 	if accum_len[-1] <= 64:
