@@ -200,16 +200,19 @@ def generate_text(text, ratio=0.8):
 	output_lst = []
 	prob_lst = []
 	with graph.as_default():
+
+		print("Sample,", i + 1, " of ", args.samples)
+		line = tokenization.convert_to_unicode(text)
+		line = clean(line)
+		print(line)
+		bert_tokens = tokenizer.tokenize(line)
+		encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
+		encoded_prefix = encoded[0:int(len(encoded)*ratio)]
+		print("=encoded length== ", len(encoded), '==context length==', len(encoded_prefix))
+		context_formatted = []
+		context_formatted.extend(encoded_prefix)
+
 		for i in range(args.samples):
-			print("Sample,", i + 1, " of ", args.samples)
-			line = tokenization.convert_to_unicode(text)
-			line = clean(line)
-			bert_tokens = tokenizer.tokenize(line)
-			encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
-			encoded_prefix = encoded[0:int(len(encoded)*ratio)]
-			print("=encoded length== ", len(encoded), '==context length==', len(encoded_prefix))
-			context_formatted = []
-			context_formatted.extend(encoded_prefix)
 			# Format context end
 			gens = []
 			gens_raw = []
@@ -280,7 +283,6 @@ for input_file in file_list:
 			line = reader.readline()
 			
 			if not line:
-				print(all_documents[-1])
 				process(all_documents[-1])
 				document_len = 0
 				break
@@ -290,7 +292,6 @@ for input_file in file_list:
 			# Empty lines are used as document delimiters
 			if not line or len(line) < 1:
 				# all_documents.append([])
-				print(all_documents[-1])
 				process(all_documents[-1])
 				all_documents.append([])
 				document_len = 0
