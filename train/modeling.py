@@ -740,7 +740,7 @@ def initialize_from_context(initial_context, ignore_ids, news_config, p_for_topp
     return {
         'tokens': tf.concat([initial_context, context_output['new_tokens'][:, None]], 1),
         'cache': context_output['new_cache'],
-        'probs': tf.concat(gt_logprobs, context_output['new_probs'][:, None], axis=1)
+        'probs': tf.concat([gt_logprobs, context_output['new_probs'][:, None]], axis=1)
     }
 
 
