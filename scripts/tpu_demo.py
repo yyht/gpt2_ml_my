@@ -161,9 +161,7 @@ batch_size_per_chunk = int(np.ceil(args.batch_size / num_chunks))
 # This controls the top p for each generation.
 top_p = np.ones((num_chunks, batch_size_per_chunk), dtype=np.float32) * args.top_p
 
-tf_config = tf.ConfigProto(allow_soft_placement=True)
-
-with tf.Session(tpu_cluster, config=tf_config, graph=tf.Graph()) as sess:
+with tf.Session(tpu_cluster) as sess:
     sess.run(tpu.initialize_system())
     initial_context = tf.placeholder(tf.int32, [batch_size_per_chunk, None])
     p_for_topp = tf.placeholder(tf.float32, [batch_size_per_chunk])
