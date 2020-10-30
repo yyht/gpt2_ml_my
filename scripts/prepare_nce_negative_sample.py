@@ -260,7 +260,6 @@ for document in all_documents:
 	sentences = re.split(r"([。!！?？；;])", document)
 	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 	accum_len = np.cumsum([len(doc) for doc in document])
-	print(document, accum_len)
 
 	if accum_len[-1] <= 64:
 		context = "".join(document)[0:5]
@@ -269,8 +268,7 @@ for document in all_documents:
 		for index, item in enumerate(accum_len):
 			if total_length < item:
 				break
-		context = "".join(document[0:(index)])
-	print(context)
+		context = "".join(document[0:(index+1)])
 
 	fake_samples = generate_text(context)
 
