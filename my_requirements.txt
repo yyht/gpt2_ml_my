@@ -1,7 +1,6 @@
 pandas==0.24.2
 regex==2019.4.14
 h5py==2.10.0
-numpy==1.18.4
 tqdm==4.31.1
 requests==2.22.0
 ujson==2.0.3
