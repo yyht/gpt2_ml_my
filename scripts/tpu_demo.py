@@ -192,6 +192,8 @@ with tf.Session(target=tpu_cluster, config=tf_config, graph=tf.Graph()) as sess:
             gens_raw = []
             gen_probs = []
 
+            print("==begin to run==")
+
             for chunk_i in range(num_chunks):
                 tokens_out, probs_out = sess.run([tokens, probs],
                                                  feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
