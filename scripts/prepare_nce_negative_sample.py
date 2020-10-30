@@ -271,7 +271,8 @@ def process(document):
 		output_dict = {
 			"clean_original":"".join(clean_original),
 			"gpt_generated":fake_sample,
-			"probs":np.log(prob[0]+1e-10).tolist()
+			"probs":np.log(prob[0]+1e-10).tolist(),
+			"ppl":np.exp(np.log(prob[0]+1e-10).mean())
 		}
 		fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 
