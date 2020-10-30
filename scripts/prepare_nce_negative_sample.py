@@ -161,7 +161,7 @@ def clean(text):
 
 args = parser.parse_args()
 proj_root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-vocab_file_path = os.path.join(proj_root_path, "tokenization/clue-vocab.txt")
+vocab_file_path = os.path.join(proj_root_path, "tokenization/bert-base-chinese-vocab.txt")
 tokenizer = tokenization.FullTokenizer(vocab_file=vocab_file_path , do_lower_case=True)
 news_config = GroverConfig.from_json_file(args.config_fn)
 
@@ -233,7 +233,7 @@ def generate_text(text, ratio=0.8):
 			l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
 			output_lst.append(l)
 			prob_lst.append(gen_probs)
-	return output_lst, prob_lst, bert_tokens
+	return line, output_lst, prob_lst, bert_tokens
 
 def get_file_path(root_path, file_list, dir_list):
 	dir_or_files = os.listdir(root_path)
@@ -265,13 +265,12 @@ def process(document):
 
 	context = "".join(document)
 
-	fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
-	for prob in fake_probs:
-		print(prob[0].shape, len(bert_tokens))
+	clean_original, fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
 
 	output_dict = {
-		"original":"".join(document),
-		"gpt_generated":fake_samples
+		"clean_original":"".join(clean_original),
+		"gpt_generated":fake_samples,
+		"probs":[np.log(prob[0]).sum().tolist() for prob in fake_probs]
 	}
 	fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 
