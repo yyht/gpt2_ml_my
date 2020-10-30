@@ -240,7 +240,8 @@ for input_file in file_list:
 			
 			if not line:
 				break
-			line = "".join(line.strip().split())
+			line = line.strip()
+			line = "".join(line.split(" "))
 
 			# Empty lines are used as document delimiters
 			if not line or len(line) < 1:
@@ -251,7 +252,7 @@ for input_file in file_list:
 			all_documents[-1].append(line)
 
 fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "w")
-print(all_documents)
+
 for document in all_documents:
 	init_len = 0
 	index = 0
@@ -264,7 +265,7 @@ for document in all_documents:
 		for index, item in enumerate(accum_len):
 			if total_length < item:
 				break
-		context = "".join(document[0:(index+1)])
+		context = "".join(document[0:(index)])
 
 	fake_samples = generate_text(context)
 	output_dict = {
