@@ -271,6 +271,7 @@ for input_file in file_list:
 			# Empty lines are used as document delimiters
 			if not line or len(line) < 1:
 				# all_documents.append([])
+				print(all_documents[-1])
 				process(all_documents[-1])
 				all_documents.append([])
 				continue
