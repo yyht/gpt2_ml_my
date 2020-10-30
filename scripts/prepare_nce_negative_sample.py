@@ -197,6 +197,9 @@ def generate_text(text):
 			context_formatted = []
 			context_formatted.extend(encoded)
 			# Format context end
+
+			print(len(bert_tokens), '==original length==')
+
 			gens = []
 			gens_raw = []
 			gen_probs = []
