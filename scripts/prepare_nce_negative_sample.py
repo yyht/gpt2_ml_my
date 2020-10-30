@@ -242,6 +242,7 @@ for input_file in file_list:
 				break
 			line = line.strip()
 			line = "".join(line.split(" "))
+			print(line)
 
 			# Empty lines are used as document delimiters
 			if not line or len(line) < 1:
