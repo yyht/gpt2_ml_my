@@ -242,7 +242,7 @@ else:
 	file_list = [args.input_path]
 
 all_documents = [[]]
-fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "w")
+fwobj = tf.gfile.GFile(args.output_path+"_with_nce_output.txt", "w")
 
 def process(document):
 	init_len = 0
