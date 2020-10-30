@@ -260,7 +260,7 @@ for document in all_documents:
 	sentences = re.split(r"([。!！?？；;])", document)
 	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 	accum_len = np.cumsum([len(doc) for doc in document])
-
+	print(document)
 	if accum_len[-1] <= 64:
 		context = "".join(document)[0:32]
 	else:
