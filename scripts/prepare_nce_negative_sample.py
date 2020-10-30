@@ -197,9 +197,6 @@ def generate_text(text):
 			context_formatted = []
 			context_formatted.extend(encoded)
 			# Format context end
-
-			print(len(bert_tokens), '==original length==')
-
 			gens = []
 			gens_raw = []
 			gen_probs = []
@@ -217,7 +214,7 @@ def generate_text(text):
 			l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
 			output_lst.append(l)
 			prob_lst.append(gen_probs)
-	return output_lst, prob_lst
+	return output_lst, prob_lst, bert_tokens
 
 def get_file_path(root_path, file_list, dir_list):
 	dir_or_files = os.listdir(root_path)
@@ -248,12 +245,12 @@ def process(document):
 	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 	accum_len = np.cumsum([len(doc) for doc in document])
 
-	max_gen_length = int(accum_len[-1]*0.2)
+	max_gen_length = int(accum_len[-1]*0.8)
 
 	context = "".join(document)[0:max_gen_length]
 
-	fake_samples, fake_probs = generate_text(context)
-	print(fake_probs[0][0].shape)
+	fake_samples, fake_probs, bert_tokens = generate_text(context)
+	print(fake_probs[0][0].shape, len(bert_tokens), accum_len[-1])
 
 	output_dict = {
 		"original":"".join(document),
