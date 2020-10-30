@@ -250,7 +250,7 @@ def process(document):
 	context = "".join(document)[0:max_gen_length]
 
 	fake_samples, fake_probs = generate_text(context)
-	print(fake_probs[0].shape)
+	print(fake_probs[0][0].shape)
 
 	output_dict = {
 		"original":"".join(document),

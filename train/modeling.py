@@ -783,7 +783,7 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, ignor
             is_len = tf.greater(get_shape_list(probs)[1], sequence_length)
             # return tf.logical_not(is_eos)
             # return tf.logical_not(tf.logical_and(is_eos, is_len))
-            return tf.logical_not(is_len)
+            return tf.logical_not(tf.logical_or(is_eos, is_len))
 
         tokens, cache, probs = tf.while_loop(
             cond=cond, body=body, maximum_iterations=72,
