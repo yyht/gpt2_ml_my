@@ -177,34 +177,33 @@ with tf.Session(target=tpu_cluster, config=tf_config, graph=tf.Graph()) as sess:
     saver = tf.train.Saver()
     saver.restore(sess, args.ckpt_fn)
     print('Model loaded. \nInput something please:')
-    text = input()
-    while text != "":
-        for i in range(args.samples):
-            print("Sample,", i + 1, " of ", args.samples)
-            line = tokenization.convert_to_unicode(text)
-            bert_tokens = tokenizer.tokenize(line)
-            encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
-            context_formatted = []
-            context_formatted.extend(encoded)
-            # Format context end
+    text = '今年双十一'
 
-            gens = []
-            gens_raw = []
-            gen_probs = []
+    for i in range(args.samples):
+        print("Sample,", i + 1, " of ", args.samples)
+        line = tokenization.convert_to_unicode(text)
+        bert_tokens = tokenizer.tokenize(line)
+        encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
+        context_formatted = []
+        context_formatted.extend(encoded)
+        # Format context end
 
-            print("==begin to run==")
+        gens = []
+        gens_raw = []
+        gen_probs = []
 
-            for chunk_i in range(num_chunks):
-                tokens_out, probs_out = sess.run([tokens, probs],
-                                                 feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
-                                                            eos_token: args.eos_token, min_len: args.min_len,
-                                                            p_for_topp: top_p[chunk_i]})
+        print("==begin to run==")
 
-                for t_i, p_i in zip(tokens_out, probs_out):
-                    extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
-                    gens.append(extraction['extraction'])
+        for chunk_i in range(num_chunks):
+            tokens_out, probs_out = sess.run([tokens, probs],
+                                             feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
+                                                        eos_token: args.eos_token, min_len: args.min_len,
+                                                        p_for_topp: top_p[chunk_i]})
 
-            l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
-            print("\n".join(l))
-        print('Next try:️')
-        text = input()
+            for t_i, p_i in zip(tokens_out, probs_out):
+                extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
+                gens.append(extraction['extraction'])
+
+        l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
+        print("\n".join(l))
+    sess.run(tpu.shutdown_system())
