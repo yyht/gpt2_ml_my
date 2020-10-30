@@ -187,6 +187,7 @@ with graph.as_default():
 def generate_text(text):
 
 	output_lst = []
+	prob_lst = []
 	with graph.as_default():
 		for i in range(args.samples):
 			print("Sample,", i + 1, " of ", args.samples)
@@ -208,10 +209,12 @@ def generate_text(text):
 				for t_i, p_i in zip(tokens_out, probs_out):
 					extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
 					gens.append(extraction['extraction'])
+					gen_probs.append(p_i)
 
 			l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
 			output_lst.append(l)
-	return output_lst
+			prob_lst.append(gen_probs)
+	return output_lst, prob_lst
 
 def get_file_path(root_path, file_list, dir_list):
 	dir_or_files = os.listdir(root_path)
@@ -232,6 +235,28 @@ else:
 	file_list = [args.input_path]
 
 all_documents = [[]]
+fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "w")
+
+def process(document):
+	init_len = 0
+	index = 0
+	document = "".join(document)
+	sentences = re.split(r"([。!！?？；;])", document)
+	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
+	accum_len = np.cumsum([len(doc) for doc in document])
+
+	max_gen_length = int(accum_len[-1]*0.2)
+
+	context = "".join(document)[0:max_gen_length]
+
+	fake_samples, fake_probs = generate_text(context)
+	print(fake_probs)
+
+	output_dict = {
+		"original":"".join(document),
+		"gpt_generated":fake_samples
+	}
+	fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 
 for input_file in file_list:
 	with tf.gfile.GFile(input_file, "r") as reader:
@@ -246,37 +271,12 @@ for input_file in file_list:
 			# Empty lines are used as document delimiters
 			if not line or len(line) < 1:
 				# all_documents.append([])
+				process(all_documents[-1])
 				all_documents.append([])
 				continue
 
 			all_documents[-1].append(line)
-
-fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "w")
-
-for document in all_documents:
-	init_len = 0
-	index = 0
-	document = "".join(document)
-	sentences = re.split(r"([。!！?？；;])", document)
-	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
-	accum_len = np.cumsum([len(doc) for doc in document])
-
-	if accum_len[-1] <= 64:
-		context = "".join(document)[0:5]
-	else:
-		total_length = accum_len[-1] - 64
-		for index, item in enumerate(accum_len):
-			if total_length < item:
-				break
-		context = "".join(document[0:(index+1)])
-
-	fake_samples = generate_text(context)
-
-	output_dict = {
-		"original":"".join(document),
-		"gpt_generated":fake_samples
-	}
-	fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
+	
 fwobj.close()
 
 
