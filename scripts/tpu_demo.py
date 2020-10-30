@@ -4,7 +4,13 @@ import argparse
 import json
 import re
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
+from tensorflow.contrib import tpu
+from tensorflow.contrib.cluster_resolver import TPUClusterResolver
+
+# Get the TPU's location
+tpu_cluster = TPUClusterResolver(
+    tpu=['albert2']).get_master()
 import numpy as np
 
 from train.modeling import GroverModel, GroverConfig, sample
@@ -157,14 +163,7 @@ top_p = np.ones((num_chunks, batch_size_per_chunk), dtype=np.float32) * args.top
 
 tf_config = tf.ConfigProto(allow_soft_placement=True)
 
-from tensorflow.contrib import tpu
-from tensorflow.contrib.cluster_resolver import TPUClusterResolver
-
-# Get the TPU's location
-tpu_cluster = TPUClusterResolver(
-    tpu=['albert2']).get_master()
-
-with tf.Session(target=tpu_cluster, config=tf_config, graph=tf.Graph()) as sess:
+with tf.Session(tpu_cluster, config=tf_config, graph=tf.Graph()) as sess:
     sess.run(tpu.initialize_system())
     initial_context = tf.placeholder(tf.int32, [batch_size_per_chunk, None])
     p_for_topp = tf.placeholder(tf.float32, [batch_size_per_chunk])
