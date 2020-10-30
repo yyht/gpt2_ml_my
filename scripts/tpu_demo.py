@@ -17,15 +17,15 @@ from train.modeling import GroverModel, GroverConfig, sample
 from tokenization import tokenization
 
 ##### ignore tf deprecated warning temporarily
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-tf.logging.set_verbosity(tf.logging.DEBUG)
-from tensorflow.python.util import deprecation
-deprecation._PRINT_DEPRECATION_WARNINGS = False
-try:
-    from tensorflow.python.util import module_wrapper as deprecation
-except ImportError:
-    from tensorflow.python.util import deprecation_wrapper as deprecation
-deprecation._PER_MODULE_WARNING_LIMIT = 0
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+# tf.logging.set_verbosity(tf.logging.DEBUG)
+# from tensorflow.python.util import deprecation
+# deprecation._PRINT_DEPRECATION_WARNINGS = False
+# try:
+#     from tensorflow.python.util import module_wrapper as deprecation
+# except ImportError:
+#     from tensorflow.python.util import deprecation_wrapper as deprecation
+# deprecation._PER_MODULE_WARNING_LIMIT = 0
 
 parser = argparse.ArgumentParser(description='Contextual generation (aka given some metadata we will generate articles')
 parser.add_argument(
