@@ -157,6 +157,17 @@ vocab_file_path = os.path.join(proj_root_path, "tokenization/clue-vocab.txt")
 tokenizer = tokenization.FullTokenizer(vocab_file=vocab_file_path , do_lower_case=True)
 news_config = GroverConfig.from_json_file(args.config_fn)
 
+# We might have to split the batch into multiple chunks if the batch size is too large
+default_mbs = {12: 32, 24: 16, 48: 3}
+max_batch_size = args.max_batch_size if args.max_batch_size is not None else default_mbs[news_config.num_hidden_layers]
+
+# factorize args.batch_size = (num_chunks * batch_size_per_chunk) s.t. batch_size_per_chunk < max_batch_size
+num_chunks = int(np.ceil(args.batch_size / max_batch_size))
+batch_size_per_chunk = int(np.ceil(args.batch_size / num_chunks))
+
+# This controls the top p for each generation.
+top_p = np.ones((num_chunks, batch_size_per_chunk), dtype=np.float32) * args.top_p
+
 tf_config = tf.ConfigProto(allow_soft_placement=True)
 graph = tf.Graph()
 with graph.as_default():
@@ -175,16 +186,6 @@ with graph.as_default():
 
 def generate_text(text):
 
-	# We might have to split the batch into multiple chunks if the batch size is too large
-	default_mbs = {12: 32, 24: 16, 48: 3}
-	max_batch_size = args.max_batch_size if args.max_batch_size is not None else default_mbs[news_config.num_hidden_layers]
-
-	# factorize args.batch_size = (num_chunks * batch_size_per_chunk) s.t. batch_size_per_chunk < max_batch_size
-	num_chunks = int(np.ceil(args.batch_size / max_batch_size))
-	batch_size_per_chunk = int(np.ceil(args.batch_size / num_chunks))
-
-	# This controls the top p for each generation.
-	top_p = np.ones((num_chunks, batch_size_per_chunk), dtype=np.float32) * args.top_p
 	output_lst = []
 	with graph.as_default():
 		for i in range(args.samples):
