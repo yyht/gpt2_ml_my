@@ -723,6 +723,7 @@ def sample_step(tokens, ignore_ids, news_config, batch_size=1, p_for_topp=0.95, 
         'new_tokens': new_tokens,
         'new_probs': new_probs,
         'new_cache': model.new_kvs,
+        "model":model
     }
 
 
@@ -732,10 +733,14 @@ def initialize_from_context(initial_context, ignore_ids, news_config, p_for_topp
 
     context_output = sample_step(tokens=initial_context, ignore_ids=ignore_ids, news_config=news_config,
                                  batch_size=batch_size, p_for_topp=p_for_topp, cache=None, do_topk=do_topk)
+    model = context_output['model']
+
+    gt_logprobs = tf.squeeze(tf.batch_gather(model.log_probs, model.target_ids[:, :-1, None]), axis=2)
+
     return {
         'tokens': tf.concat([initial_context, context_output['new_tokens'][:, None]], 1),
         'cache': context_output['new_cache'],
-        'probs': context_output['new_probs'][:, None]
+        'probs': tf.caoncat(gt_logprobs, context_output['new_probs'][:, None], axis=1)
     }
 
 
@@ -779,7 +784,7 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, ignor
         def cond(ctx, cache, probs):
             # ctx = tf.Print(ctx,[tf.shape(ctx)])
             is_eos = tf.reduce_all(tf.reduce_any(tf.equal(ctx[:,-1:], eos_token), axis=1))
-            sequence_length = tf.cast(tf.cast(get_shape_list(ctx)[1], dtype=tf.float32)/0.8*0.2, dtype=tf.int32)
+            sequence_length = tf.cast(tf.cast(get_shape_list(ctx)[1], dtype=tf.float32)/0.8, dtype=tf.int32)
             is_len = tf.greater(get_shape_list(probs)[1], sequence_length)
             # return tf.logical_not(is_eos)
             # return tf.logical_not(tf.logical_and(is_eos, is_len))

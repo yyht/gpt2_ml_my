@@ -249,7 +249,8 @@ def process(document):
 	context = "".join(document)
 
 	fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
-	print(fake_probs[0][0].shape, len(bert_tokens))
+	for prob in fake_probs:
+		print(prob[0].shape, len(bert_tokens))
 
 	output_dict = {
 		"original":"".join(document),
