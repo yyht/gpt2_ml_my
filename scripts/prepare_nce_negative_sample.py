@@ -256,19 +256,18 @@ for document in all_documents:
 	init_len = 0
 	index = 0
 	accum_len = np.cumsum([len(doc) for doc in document])
+	print(accum_len)
 	if accum_len[-1] <= 64:
 		context = "".join(document)[0:32]
 	else:
 		total_length = accum_len[-1] - 64
 		for index, item in enumerate(accum_len):
 			if total_length < item:
+				print(index)
 				break
 		context = "".join(document[0:(index+1)])
 
 	fake_samples = generate_text(context)
-	for fake in fake_samples:
-		print(context, '==context==')
-		print(fake, '==fake==')
 	output_dict = {
 		"original":"".join(document),
 		"gpt_generated":fake_samples
