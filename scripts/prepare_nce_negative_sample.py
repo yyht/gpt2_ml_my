@@ -264,6 +264,8 @@ for input_file in file_list:
 			line = reader.readline()
 			
 			if not line:
+				print(all_documents[-1])
+				process(all_documents[-1])
 				break
 			line = line.strip()
 			line = "".join(line.split(" "))
