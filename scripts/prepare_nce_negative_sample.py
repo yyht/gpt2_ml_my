@@ -252,7 +252,7 @@ for input_file in file_list:
 			all_documents[-1].append(line)
 
 fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "w")
-
+print(all_documents)
 for document in all_documents:
 	init_len = 0
 	index = 0
