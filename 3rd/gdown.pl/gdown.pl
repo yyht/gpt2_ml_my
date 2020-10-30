@@ -31,7 +31,7 @@ elsif ($URL=~m#^https?://drive.google.com/open\?id=([^/]+)#) {
     $URL="https://docs.google.com/uc?id=$1&export=download";
 }
 
-$URL="https://docs.google.com/uc?id=$1&export=download";
+$URL="https://drive.google.com/u/0/uc?id=1mT_qCQg4AWnAXTwKfsyyRWCRpgPrBJS3&export=download";
 
 execute_command();
 
