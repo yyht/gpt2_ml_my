@@ -184,7 +184,7 @@ with graph.as_default():
 	saver.restore(sess, args.ckpt_fn)
 	print(u'🍺Model loaded. \nInput something please:⬇️')
 
-def generate_text(text):
+def generate_text(text, ratio=0.8):
 
 	output_lst = []
 	prob_lst = []
@@ -194,8 +194,10 @@ def generate_text(text):
 			line = tokenization.convert_to_unicode(text)
 			bert_tokens = tokenizer.tokenize(line)
 			encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
+			encoded_prefix = encoded[0:int(len(encoded)*ratio)]
+			print("=encoded length== ", len(encoded), '==context length==', len(encoded_prefix))
 			context_formatted = []
-			context_formatted.extend(encoded)
+			context_formatted.extend(encoded_prefix)
 			# Format context end
 			gens = []
 			gens_raw = []
@@ -243,14 +245,11 @@ def process(document):
 	document = "".join(document)
 	sentences = re.split(r"([。!！?？；;])", document)
 	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
-	accum_len = np.cumsum([len(doc) for doc in document])
 
-	max_gen_length = int(accum_len[-1]*0.8)
+	context = "".join(document)
 
-	context = "".join(document)[0:max_gen_length]
-
-	fake_samples, fake_probs, bert_tokens = generate_text(context)
-	print(fake_probs[0][0].shape, len(bert_tokens), accum_len[-1])
+	fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
+	print(fake_probs[0][0].shape, len(bert_tokens))
 
 	output_dict = {
 		"original":"".join(document),
