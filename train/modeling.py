@@ -784,7 +784,7 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_l
         def cond(ctx, cache, probs):
             # ctx = tf.Print(ctx,[tf.shape(ctx)])
             is_eos = tf.reduce_all(tf.reduce_any(tf.equal(ctx[:,-1:], eos_token), axis=1))
-            is_max_len = tf.greater(get_shape_list(probs)[1], max_len)
+            is_max_len = tf.greater_equal(get_shape_list(probs)[1], max_len)
             # is_min_len = tf.less(get_shape_list(probs)[1], min_len)
             # length_cond = tf.logical_and(is_max_len, is_min_len)
             return tf.logical_not(tf.logical_or(is_eos, is_max_len))
