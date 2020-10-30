@@ -161,7 +161,7 @@ def clean(text):
 
 args = parser.parse_args()
 proj_root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-vocab_file_path = os.path.join(proj_root_path, "tokenization/bert-base-chinese-vocab.txt")
+vocab_file_path = os.path.join(proj_root_path, "tokenization/clue-vocab.txt")
 tokenizer = tokenization.FullTokenizer(vocab_file=vocab_file_path , do_lower_case=True)
 news_config = GroverConfig.from_json_file(args.config_fn)
 
@@ -270,7 +270,7 @@ def process(document):
 	output_dict = {
 		"clean_original":"".join(clean_original),
 		"gpt_generated":fake_samples,
-		"probs":[np.log(prob[0]).sum().tolist() for prob in fake_probs]
+		"probs":[np.log(prob[0]+1e-10).tolist() for prob in fake_probs]
 	}
 	fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 
