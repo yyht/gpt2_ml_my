@@ -176,7 +176,7 @@ with tf.Session(target=tpu_cluster, config=tf_config, graph=tf.Graph()) as sess:
 
     saver = tf.train.Saver()
     saver.restore(sess, args.ckpt_fn)
-    print(u'🍺Model loaded. \nInput something please:⬇️')
+    # print(u'🍺Model loaded. \nInput something please:⬇️')
     text = input()
     while text != "":
         for i in range(args.samples):
