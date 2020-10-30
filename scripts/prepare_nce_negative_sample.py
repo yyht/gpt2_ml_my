@@ -242,7 +242,6 @@ for input_file in file_list:
 				break
 			line = line.strip()
 			line = "".join(line.split(" "))
-			print(line)
 
 			# Empty lines are used as document delimiters
 			if not line or len(line) < 1:
@@ -253,12 +252,12 @@ for input_file in file_list:
 			all_documents[-1].append(line)
 
 fwobj = tf.gfile.GFile(os.path.join(args.output_path, "_with_nce_output.txt"), "w")
-print(all_documents)
+
 for document in all_documents:
 	init_len = 0
 	index = 0
 	accum_len = np.cumsum([len(doc) for doc in document])
-	print(accum_len)
+
 	if accum_len[-1] <= 64:
 		context = "".join(document)[0:32]
 	else:
@@ -269,6 +268,7 @@ for document in all_documents:
 		context = "".join(document[0:(index)])
 
 	fake_samples = generate_text(context)
+	print(fake_samples)
 	output_dict = {
 		"original":"".join(document),
 		"gpt_generated":fake_samples
