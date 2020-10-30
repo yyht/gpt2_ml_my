@@ -201,7 +201,6 @@ def generate_text(text, ratio=0.8):
 	prob_lst = []
 	with graph.as_default():
 
-		print("Sample,", i + 1, " of ", args.samples)
 		line = tokenization.convert_to_unicode(text)
 		line = clean(line)
 		print(line)
@@ -213,6 +212,7 @@ def generate_text(text, ratio=0.8):
 		context_formatted.extend(encoded_prefix)
 
 		for i in range(args.samples):
+			print("Sample,", i + 1, " of ", args.samples)
 			# Format context end
 			gens = []
 			gens_raw = []
