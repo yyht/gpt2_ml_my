@@ -681,7 +681,8 @@ def model_fn_builder(config: GroverConfig, init_checkpoint, learning_rate,
     return model_fn
 
 
-def sample_step(tokens, ignore_ids, news_config, batch_size=1, p_for_topp=0.95, cache=None, do_topk=False):
+def sample_step(tokens, ignore_ids, news_config, batch_size=1, 
+                p_for_topp=0.95, k_for_topk=100, cache=None, do_topk=False):
     """
     Helper function that samples from grover for a single step
     :param tokens: [batch_size, n_ctx_b] tokens that we will predict from
@@ -713,7 +714,7 @@ def sample_step(tokens, ignore_ids, news_config, batch_size=1, p_for_topp=0.95, 
     next_logits = tf.reshape(model.logits_flat, [batch_size, -1, vocab_size])[:, -1]
 
     if do_topk:
-        sample_info = _top_k_sample(next_logits, num_samples=1, k=tf.cast(p_for_topp, dtype=tf.int32))
+        sample_info = _top_k_sample(next_logits, num_samples=1, k=k_for_topk)
     else:
         sample_info = _top_p_sample(next_logits, ignore_ids=ignore_ids, num_samples=1, p=p_for_topp)
 
@@ -727,12 +728,17 @@ def sample_step(tokens, ignore_ids, news_config, batch_size=1, p_for_topp=0.95, 
     }
 
 
-def initialize_from_context(initial_context, ignore_ids, news_config, p_for_topp=0.95, do_topk=False):
+def initialize_from_context(initial_context, ignore_ids, news_config, 
+                p_for_topp=0.95, k_for_topk=100, do_topk=False):
     """ same signature as sample_step"""
     batch_size, _ = get_shape_list(initial_context, expected_rank=2)
 
     context_output = sample_step(tokens=initial_context, ignore_ids=ignore_ids, news_config=news_config,
-                                 batch_size=batch_size, p_for_topp=p_for_topp, cache=None, do_topk=do_topk)
+                                 batch_size=batch_size, 
+                                 p_for_topp=p_for_topp, 
+                                 k_for_topk=k_for_topk,
+                                 cache=None, 
+                                 do_topk=do_topk)
     model = context_output['model']
 
     gt_logprobs = tf.squeeze(tf.batch_gather(model.log_probs[:, 1:], model.target_ids[:, :-1, None]), axis=2)
@@ -744,7 +750,8 @@ def initialize_from_context(initial_context, ignore_ids, news_config, p_for_topp
     }
 
 
-def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_len, ignore_ids=None, p_for_topp=0.95,
+def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_len, ignore_ids=None, 
+            p_for_topp=0.95, k_for_topk=100,
            do_topk=False):
     """
     V1 version of: sample outputs from a model, and do it all at once
@@ -762,8 +769,10 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_l
 
     with tf.name_scope('sample_sequence'):
         # Initial call to get cache
-        context_output = initialize_from_context(initial_context, ignore_ids=ignore_ids, news_config=news_config,
+        context_output = initialize_from_context(initial_context, ignore_ids=ignore_ids, 
+                                                news_config=news_config,
                                                  p_for_topp=p_for_topp,
+                                                 k_for_topk=k_for_topk,
                                                  do_topk=do_topk)
         ctx = context_output['tokens']
         cache = context_output['cache']
@@ -772,7 +781,10 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_l
         def body(ctx, cache, probs):
             """ for whatever reason this didn't work when I ran it on more than one at once... ugh."""
             next_outputs = sample_step(ctx[:, -1][:, None], ignore_ids=ignore_ids, news_config=news_config,
-                                       batch_size=batch_size, p_for_topp=p_for_topp, cache=cache,
+                                       batch_size=batch_size, 
+                                       p_for_topp=p_for_topp, 
+                                       k_for_topk=k_for_topk,
+                                       cache=cache,
                                        do_topk=do_topk)
 
             # Update everything

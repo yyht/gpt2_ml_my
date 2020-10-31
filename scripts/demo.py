@@ -171,6 +171,7 @@ with tf.Session(config=tf_config, graph=tf.Graph()) as sess:
     eos_token = tf.placeholder(tf.int32, [])
     min_len = tf.placeholder(tf.int32, [])
     max_len = tf.placeholder(tf.int32, [])
+    k_for_topk = tf.placeholder(tf.int32, [])
     tokens, probs = sample(news_config=news_config, initial_context=initial_context,
                            eos_token=eos_token, min_len=min_len, 
                            max_len=max_len,
@@ -201,7 +202,8 @@ with tf.Session(config=tf_config, graph=tf.Graph()) as sess:
                                                             eos_token: args.eos_token, 
                                                             min_len: args.min_len,
                                                             max_len: args.max_len,
-                                                            p_for_topp: top_p[chunk_i]})
+                                                            p_for_topp: top_p[chunk_i],
+                                                            k_for_topk: 1000})
 
                 for t_i, p_i in zip(tokens_out, probs_out):
                     extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
