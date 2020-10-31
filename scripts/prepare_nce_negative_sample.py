@@ -244,7 +244,7 @@ def _is_punctuation(ch):
 
 def decode(tokens):
 
-    tokens = [token for token in tokens if not _is_special(token)]
+    tokens = [token for token in tokens if not _is_special(token) and token not in ['[UNK]']]
 
     text, flag = '', False
     for i, token in enumerate(tokens):
