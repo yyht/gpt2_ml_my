@@ -242,7 +242,7 @@ def generate_text(text, ratio=0.8):
 					gens.append(extraction['extraction'])
 					gen_probs.append(p_i)
 
-			l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
+			l = gens[0] #re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
 			output_lst.append(l)
 			prob_lst.append(gen_probs)
 		print(time.time()-start)
@@ -291,7 +291,7 @@ def process(document):
 		}
 		fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 	return 1
-	
+
 for input_file in file_list:
 	document_len = 0
 	with tf.gfile.GFile(input_file, "r") as reader:
