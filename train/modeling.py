@@ -803,5 +803,4 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_l
                               ],
             back_prop=False,
         )
-    print(probs)
     return tokens, probs
