@@ -119,7 +119,7 @@ parser.add_argument(
 parser.add_argument(
 	'-eos_token',
 	dest='eos_token',
-	default=511,
+	default=102,
 	type=int,
 	help='eos token id',
 )
