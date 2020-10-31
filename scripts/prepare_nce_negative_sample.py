@@ -152,10 +152,19 @@ def extract_generated_target(output_tokens, tokenizer):
 	}
 
 import re
+from urlextract import URLExtract
+url_extract_api = URLExtract()
+
 def clean(text):
-	text = re.sub("""(<[=0-9a-zA-Z\/&""]+>;?)+""", "", text)
+	text = re.sub("""(<[=0-9a-zA-Z\/&"":_\\.]+>;?)+""", "", text)
 	text = re.sub("""((&|#|$)+[0-9a-zA-Z]+;?)+""", "", text)
-	return text
+	try:
+		urls = url_extract_api.find_urls(text)
+		for url in urls:
+			text = re.sub(url, "", text)
+		return text
+	except:
+		return text
 
 args = parser.parse_args()
 proj_root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
