@@ -372,7 +372,8 @@ def _top_p_sample(logits, ignore_ids=None, num_samples=1, p=0.9):
 
         # OPTION A - sample in the sorted space, then unsort.
         logits_to_use = tf.batch_gather(logits, indices) - tf.cast(exclude_mask, tf.float32) * 1e10
-        # sample_perm = tf.random.categorical(logits=logits_to_use, num_samples=num_samples)
+        sample_perm = tf.random.categorical(logits=logits_to_use, num_samples=num_samples)
+        print(sample_perm, '==sample_perm==')
         sample_perm = gumbel_sample(logits=logits_to_use, num_samples=num_samples)
         sample = tf.batch_gather(indices, sample_perm)
 
