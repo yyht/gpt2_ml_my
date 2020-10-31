@@ -176,7 +176,7 @@ with tf.Session(config=tf_config, graph=tf.Graph()) as sess:
                            eos_token=eos_token, min_len=min_len, 
                            max_len=max_len,
                            ignore_ids=None, p_for_topp=p_for_topp,
-                           do_topk=True)
+                           do_topk=False)
 
     saver = tf.train.Saver()
     saver.restore(sess, args.ckpt_fn)
