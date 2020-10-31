@@ -158,6 +158,7 @@ url_extract_api = URLExtract()
 def clean(text):
 	text = re.sub("""(<[=0-9a-zA-Z\/&"":_\\.]+>;?)+""", "", text)
 	text = re.sub("""((&|#|$)+[0-9a-zA-Z]+;?)+""", "", text)
+	text = re.sub("""[★☆]+""", "", text)
 	try:
 		urls = url_extract_api.find_urls(text)
 		for url in urls:
