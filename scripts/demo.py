@@ -100,7 +100,14 @@ parser.add_argument(
 parser.add_argument(
     '-min_len',
     dest='min_len',
-    default=1024,
+    default=128,
+    type=int,
+    help='min length of sample',
+)
+parser.add_argument(
+    '-max_len',
+    dest='min_len',
+    default=256,
     type=int,
     help='min length of sample',
 )
@@ -191,7 +198,9 @@ with tf.Session(config=tf_config, graph=tf.Graph()) as sess:
             for chunk_i in range(num_chunks):
                 tokens_out, probs_out = sess.run([tokens, probs],
                                                  feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
-                                                            eos_token: args.eos_token, min_len: args.min_len,
+                                                            eos_token: args.eos_token, 
+                                                            min_len: args.min_len,
+                                                            max_len: args.max_len,
                                                             p_for_topp: top_p[chunk_i]})
 
                 for t_i, p_i in zip(tokens_out, probs_out):
