@@ -106,7 +106,7 @@ parser.add_argument(
 )
 parser.add_argument(
     '-max_len',
-    dest='min_len',
+    dest='max_len',
     default=256,
     type=int,
     help='min length of sample',
