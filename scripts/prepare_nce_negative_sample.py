@@ -153,10 +153,8 @@ def extract_generated_target(output_tokens, tokenizer):
 
 import re
 def clean(text):
-	text = re.sub("(<p>;?)+", "", text)
-	text = re.sub("(</p>;?)+", "", text)
-	text = re.sub("""(<imgsrc="23857019472"/>;?)+""", "", text)
-	text = re.sub("(&nbsp;?)+", "", text)
+	text = re.sub("""(<[=0-9a-zA-Z\/&""]+>;?)+""", "", text)
+	text = re.sub("""((&|#|$)+[0-9a-zA-Z]+;?)+""", "", text)
 	return text
 
 args = parser.parse_args()
