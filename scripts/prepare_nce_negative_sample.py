@@ -157,7 +157,6 @@ def clean(text):
 	text = re.sub("(</p>;?)+", "", text)
 	text = re.sub("""(<imgsrc="23857019472"/>;?)+""", "", text)
 	text = re.sub("(&nbsp;?)+", "", text)
-	text = re.
 	return text
 
 args = parser.parse_args()
