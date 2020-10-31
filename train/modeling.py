@@ -323,6 +323,7 @@ def embed(input_ids,
 
 def gumbel_sample(logits, num_samples):
     shape = get_shape_list(logits)
+    print(shape, '==input shape==')
     sample_shape = shape + [num_samples]
     uniform_noise = tf.random.uniform(sample_shape, minval=0, maxval=1)
     gumbel_noise = -tf.log(-tf.log(uniform_noise + 1e-9) + 1e-9)
