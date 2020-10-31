@@ -279,7 +279,8 @@ def process(document):
 	context = "".join(document)
 	if len(context) < 5:
 		print("==skip==")
-		
+		return 0
+
 	clean_original, fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
 
 	for fake_sample, prob in zip(fake_samples, fake_probs):
@@ -289,7 +290,8 @@ def process(document):
 			"probs":prob[0].tolist()
 		}
 		fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
-
+	return 1
+	
 for input_file in file_list:
 	document_len = 0
 	with tf.gfile.GFile(input_file, "r") as reader:
