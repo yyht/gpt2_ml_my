@@ -309,7 +309,6 @@ def generate_text(text, ratio=0.8):
                     gen_probs.append(p_i)
 
             # l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
-            print(gens[0])
             l = decode(gens[0])
             output_lst.append(l)
             prob_lst.append(gen_probs)
