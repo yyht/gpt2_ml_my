@@ -525,7 +525,7 @@ class GroverModel(object):
 
         # Note that the hidden state is still flat (batch_size*hidden_size)
         self.logits_flat = tf.matmul(self.hidden_state, self.embedding_table, transpose_b=True)
-
+        print(self.logits_flat.get_shape(), '==logits shape==')
         # THE OUTPUT BIAS DOES NOT SPARK JOY
         # output_bias = tf.get_variable('output_bias', shape=[config.vocab_size], initializer=tf.zeros_initializer())
         # self.logits_flat = tf.nn.bias_add(self.logits_flat, output_bias)
