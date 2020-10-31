@@ -321,6 +321,26 @@ def embed(input_ids,
 
     return layer_norm(embedded_input, name='embed_norm'), embedding_table
 
+def sample_gumbel(shape, samples=1, eps=1e-20): 
+    """Sample from Gumbel(0, 1)"""
+    if samples > 1:
+        sample_shape = shape + [samples]
+    else:
+        sample_shape = shape
+    U = tf.random_uniform(shape, minval=0.00001, maxval=0.99998)
+    # return -tf.log(-tf.log(U + eps) + eps)
+    return -tf.log(-tf.log(U))
+
+def gumbel_sample(logits, samples):
+    sample_shape = get_shape_list(logits)
+    if samples > 1:
+        sample_shape = shape + [samples]
+    else:
+        sample_shape = shape
+    uniform_noise = tf.random.uniform(sample_shape, minval=0, maxval=1)
+    gumbel_noise = -tf.log(-tf.log(uniform_noise + 1e-9) + 1e-9)
+    return tf.argmax(tf.nn.softmax(logits + gumbel_noise), 1,
+                              output_type=tf.int32)
 
 def _top_p_sample(logits, ignore_ids=None, num_samples=1, p=0.9):
     """
@@ -361,7 +381,8 @@ def _top_p_sample(logits, ignore_ids=None, num_samples=1, p=0.9):
 
         # OPTION A - sample in the sorted space, then unsort.
         logits_to_use = tf.batch_gather(logits, indices) - tf.cast(exclude_mask, tf.float32) * 1e10
-        sample_perm = tf.random.categorical(logits=logits_to_use, num_samples=num_samples)
+        # sample_perm = tf.random.categorical(logits=logits_to_use, num_samples=num_samples)
+        sample_perm = gumbel_sample(logits=logits_to_use, num_samples=num_samples)
         sample = tf.batch_gather(indices, sample_perm)
 
         # OPTION B - unsort first - Indices need to go back to 0 -> N-1 -- then sample
@@ -402,7 +423,8 @@ def _top_k_sample(logits, ignore_ids=None, num_samples=1, k=10):
 
         # OPTION A - sample in the sorted space, then unsort.
         logits_to_use = tf.batch_gather(logits, indices) - tf.cast(exclude_mask, tf.float32) * 1e10
-        sample_perm = tf.random.categorical(logits=logits_to_use, num_samples=num_samples)
+        # sample_perm = tf.random.categorical(logits=logits_to_use, num_samples=num_samples)
+        sample_perm = gumbel_sample(logits=logits_to_use, num_samples=num_samples)
         sample = tf.batch_gather(indices, sample_perm)
 
     return {
