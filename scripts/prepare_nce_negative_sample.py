@@ -225,7 +225,6 @@ def generate_text(text, ratio=0.8):
 															max_len: len(encoded),
 															p_for_topp: top_p[chunk_i]})
 
-				print(probs_out.shape)
 				for t_i, p_i in zip(tokens_out, probs_out):
 					extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
 					gens.append(extraction['extraction'])
