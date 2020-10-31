@@ -148,7 +148,7 @@ def extract_generated_target(output_tokens, tokenizer):
 
 args = parser.parse_args()
 proj_root_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-vocab_file_path = os.path.join(proj_root_path, "tokenization/bert-base-chinese-vocab.txt")
+vocab_file_path = os.path.join(proj_root_path, "tokenization/clue-vocab.txt")
 tokenizer = tokenization.FullTokenizer(vocab_file=vocab_file_path , do_lower_case=True)
 news_config = GroverConfig.from_json_file(args.config_fn)
 
@@ -176,6 +176,7 @@ with tf.Session(config=tf_config, graph=tf.Graph()) as sess:
                            eos_token=eos_token, min_len=min_len, 
                            max_len=max_len,
                            ignore_ids=None, p_for_topp=p_for_topp,
+                           k_for_topk=k_for_topk,
                            do_topk=False)
 
     saver = tf.train.Saver()

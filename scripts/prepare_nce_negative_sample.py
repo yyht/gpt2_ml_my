@@ -185,11 +185,13 @@ with graph.as_default():
 	eos_token = tf.placeholder(tf.int32, [])
 	min_len = tf.placeholder(tf.int32, [])
 	max_len = tf.placeholder(tf.int32, [])
-
+	k_for_topk = tf.placeholder(tf.int32, [])
 	tokens, probs = sample(news_config=news_config, initial_context=initial_context,
 							   eos_token=eos_token, min_len=min_len, 
 							   max_len=max_len,
-							   ignore_ids=None, p_for_topp=p_for_topp,
+							   ignore_ids=None, 
+							   p_for_topp=p_for_topp,
+							   k_for_topk=k_for_topk,
 							   do_topk=False)
 	saver = tf.train.Saver()
 	saver.restore(sess, args.ckpt_fn)
@@ -223,7 +225,8 @@ def generate_text(text, ratio=0.8):
 															eos_token: args.eos_token, 
 															min_len: args.min_len,
 															max_len: len(encoded),
-															p_for_topp: top_p[chunk_i]})
+															p_for_topp: top_p[chunk_i],
+															k_for_topk: 1000})
 
 				for t_i, p_i in zip(tokens_out, probs_out):
 					extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
@@ -271,8 +274,7 @@ def process(document):
 		output_dict = {
 			"clean_original":"".join(clean_original),
 			"gpt_generated":fake_sample,
-			"probs":(prob[0]).tolist(),
-			"ppl":(np.log(prob[0]+1e-10).mean()).tolist()
+			"probs":prob[0].tolist()
 		}
 		fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
 
