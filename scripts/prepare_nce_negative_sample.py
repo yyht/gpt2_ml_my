@@ -206,6 +206,7 @@ def generate_text(text, ratio=0.8):
 		line = tokenization.convert_to_unicode(text)
 		line = clean(line)
 		print(line)
+		
 		bert_tokens = tokenizer.tokenize(line)
 		encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
 		encoded_prefix = encoded[0:int(len(encoded)*ratio)]
