@@ -791,6 +791,8 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_l
         ctx = context_output['tokens']
         cache = context_output['cache']
         probs = context_output['probs']
+        print(ctx, '==ctx==')
+        print(probs, '==probs==')
 
         def body(ctx, cache, probs):
             """ for whatever reason this didn't work when I ran it on more than one at once... ugh."""
