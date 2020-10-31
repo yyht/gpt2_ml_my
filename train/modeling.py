@@ -755,7 +755,7 @@ def initialize_from_context(initial_context, ignore_ids, news_config,
                                  do_topk=do_topk)
     model = context_output['model']
 
-    gt_logprobs = tf.squeeze(tf.batch_gather(model.log_probs[:, :-1], model.input_ids[:, :-1, None]), axis=2)
+    gt_logprobs = tf.squeeze(tf.batch_gather(model.log_probs[:, :-1], model.input_ids[:, 1:, None]), axis=2)
 
     return {
         'tokens': tf.concat([initial_context, context_output['new_tokens'][:, None]], 1),
