@@ -227,6 +227,21 @@ def _is_cjk_character(ch):
         0xF900 <= code <= 0xFAFF or \
         0x2F800 <= code <= 0x2FA1F
 
+import unicodedata
+
+def _is_punctuation(ch):
+    """标点符号类字符判断（全/半角均在此内）
+    提醒：unicodedata.category这个函数在py2和py3下的
+    表现可能不一样，比如u'§'字符，在py2下的结果为'So'，
+    在py3下的结果是'Po'。
+    """
+    code = ord(ch)
+    return 33 <= code <= 47 or \
+        58 <= code <= 64 or \
+        91 <= code <= 96 or \
+        123 <= code <= 126 or \
+        unicodedata.category(ch).startswith('P')
+
 def decode(tokens):
 
     tokens = [token for token in tokens if not _is_special(token)]
