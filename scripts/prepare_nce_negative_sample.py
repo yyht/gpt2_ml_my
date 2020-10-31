@@ -208,15 +208,53 @@ with graph.as_default():
 def _cjk_punctuation():
     return u'\uff02\uff03\uff04\uff05\uff06\uff07\uff08\uff09\uff0a\uff0b\uff0c\uff0d\uff0f\uff1a\uff1b\uff1c\uff1d\uff1e\uff20\uff3b\uff3c\uff3d\uff3e\uff3f\uff40\uff5b\uff5c\uff5d\uff5e\uff5f\uff60\uff62\uff63\uff64\u3000\u3001\u3003\u3008\u3009\u300a\u300b\u300c\u300d\u300e\u300f\u3010\u3011\u3014\u3015\u3016\u3017\u3018\u3019\u301a\u301b\u301c\u301d\u301e\u301f\u3030\u303e\u303f\u2013\u2014\u2018\u2019\u201b\u201c\u201d\u201e\u201f\u2026\u2027\ufe4f\ufe51\ufe54\u00b7\uff01\uff1f\uff61\u3002'
 
-def postprocess(text):
+def _is_special(ch):
+    """判断是不是有特殊含义的符号
+    """
+    return bool(ch) and (ch[0] == '[') and (ch[-1] == ']')
+
+def _is_cjk_character(ch):
+    """CJK类字符判断（包括中文字符也在此列）
+    参考：https://en.wikipedia.org/wiki/CJK_Unified_Ideographs_(Unicode_block)
+    """
+    code = ord(ch)
+    return 0x4E00 <= code <= 0x9FFF or \
+        0x3400 <= code <= 0x4DBF or \
+        0x20000 <= code <= 0x2A6DF or \
+        0x2A700 <= code <= 0x2B73F or \
+        0x2B740 <= code <= 0x2B81F or \
+        0x2B820 <= code <= 0x2CEAF or \
+        0xF900 <= code <= 0xFAFF or \
+        0x2F800 <= code <= 0x2FA1F
+
+def decode(tokens):
+
+    tokens = [token for token in tokens if not _is_special(token)]
+
+    text, flag = '', False
+    for i, token in enumerate(tokens):
+        if token[:2] == '##':
+            text += token[2:]
+        elif len(token) == 1 and _is_cjk_character(token):
+            text += token
+        elif len(token) == 1 and _is_punctuation(token):
+            text += token
+            text += ' '
+        elif i > 0 and _is_cjk_character(text[-1]):
+            text += token
+        else:
+            text += ' '
+            text += token
+
+    text = re.sub(' +', ' ', text)
     text = re.sub('\' (re|m|s|t|ve|d|ll) ', '\'\\1 ', text)
     punctuation = _cjk_punctuation() + '+-/={(<['
     punctuation_regex = '|'.join([re.escape(p) for p in punctuation])
     punctuation_regex = '(%s) ' % punctuation_regex
     text = re.sub(punctuation_regex, '\\1', text)
     text = re.sub('(\d\.) (\d)', '\\1\\2', text)
-    return text
 
+    return text.strip()
 
 def generate_text(text, ratio=0.8):
 
@@ -256,8 +294,7 @@ def generate_text(text, ratio=0.8):
                     gen_probs.append(p_i)
 
             # l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
-            l = re.sub('[UNK]', '', gens[0])
-            l = re.sub('##', '', l)
+            l = decode(gens[0])
             output_lst.append(l)
             prob_lst.append(gen_probs)
         print(time.time()-start)
