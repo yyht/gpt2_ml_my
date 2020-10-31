@@ -331,10 +331,10 @@ def sample_gumbel(shape, samples=1, eps=1e-20):
     # return -tf.log(-tf.log(U + eps) + eps)
     return -tf.log(-tf.log(U))
 
-def gumbel_sample(logits, samples):
+def gumbel_sample(logits, num_samples):
     sample_shape = get_shape_list(logits)
     if samples > 1:
-        sample_shape = shape + [samples]
+        sample_shape = shape + [num_samples]
     else:
         sample_shape = shape
     uniform_noise = tf.random.uniform(sample_shape, minval=0, maxval=1)
