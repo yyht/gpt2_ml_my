@@ -3,7 +3,7 @@ import os
 import argparse
 import json
 import re
-
+import time
 import tensorflow.compat.v1 as tf
 import numpy as np
 
@@ -211,7 +211,7 @@ def generate_text(text, ratio=0.8):
 		print("=encoded length== ", len(encoded), '==context length==', len(encoded_prefix))
 		context_formatted = []
 		context_formatted.extend(encoded_prefix)
-
+		start = time.time()
 		for i in range(args.samples):
 			print("Sample,", i + 1, " of ", args.samples)
 			# Format context end
@@ -235,6 +235,7 @@ def generate_text(text, ratio=0.8):
 			l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
 			output_lst.append(l)
 			prob_lst.append(gen_probs)
+		print(time.time()-start)
 	return line, output_lst, prob_lst, bert_tokens
 
 def get_file_path(root_path, file_list, dir_list):
