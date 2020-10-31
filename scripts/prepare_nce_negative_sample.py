@@ -158,11 +158,11 @@ url_extract_api = URLExtract()
 def clean(text):
     text = re.sub("""(<[=0-9a-zA-Z\/&"":_\\.]+>;?)+""", "", text)
     text = re.sub("""((&|#|$)+[0-9a-zA-Z]+;?)+""", "", text)
-    text = re.sub("""[★☆]+""", "", text)
+    text = re.sub("""[★☆\u3000]+""", "", text)
     try:
         urls = url_extract_api.find_urls(text)
         for url in urls:
-            text = re.sub(url, "", text)
+            text = text.replace(url, "")
         return text
     except:
         return text
