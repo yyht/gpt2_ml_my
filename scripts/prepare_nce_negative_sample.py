@@ -242,9 +242,9 @@ def _is_punctuation(ch):
         123 <= code <= 126 or \
         unicodedata.category(ch).startswith('P')
 
-def decode(tokens):
+def decode(input_tokens):
 
-    tokens = [token for token in tokens if not _is_special(token) and token not in ['[UNK]']]
+    tokens = [token for token in input_tokens if not _is_special(token)]
 
     text, flag = '', False
     for i, token in enumerate(tokens):
