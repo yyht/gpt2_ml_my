@@ -146,7 +146,7 @@ def extract_generated_target(output_tokens, tokenizer):
     end_ind = output_tokens.shape[0]
 
     return {
-        'extraction': tokenization.printable_text(''.join(tokenizer.convert_ids_to_tokens(output_tokens))),
+        'extraction': tokenizer.convert_ids_to_tokens(output_tokens),
         'start_ind': start_ind,
         'end_ind': end_ind,
     }
