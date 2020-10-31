@@ -333,7 +333,7 @@ def sample_gumbel(shape, samples=1, eps=1e-20):
 
 def gumbel_sample(logits, num_samples):
     sample_shape = get_shape_list(logits)
-    if samples > 1:
+    if num_samples > 1:
         sample_shape = shape + [num_samples]
     else:
         sample_shape = shape
