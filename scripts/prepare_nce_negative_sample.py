@@ -277,7 +277,9 @@ def process(document):
 	document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 
 	context = "".join(document)
-
+	if len(context) < 5:
+		print("==skip==")
+		
 	clean_original, fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
 
 	for fake_sample, prob in zip(fake_samples, fake_probs):
