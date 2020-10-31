@@ -324,10 +324,8 @@ def embed(input_ids,
 def gumbel_sample(logits, num_samples):
     shape = get_shape_list(logits)
     print(shape, '==input shape==')
-    if num_samples > 1:
-        sample_shape = shape + [num_samples]
-    else:
-        sample_shape = shape
+    sample_shape = shape + [num_samples]
+    logits = tf.expand_dims(logits, axis=-1)
     uniform_noise = tf.random.uniform(sample_shape, minval=0, maxval=1)
     gumbel_noise = -tf.log(-tf.log(uniform_noise + 1e-9) + 1e-9)
     gumbel_prob = tf.nn.softmax(logits + gumbel_noise, axis=1)
