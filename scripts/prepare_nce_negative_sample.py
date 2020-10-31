@@ -153,10 +153,11 @@ def extract_generated_target(output_tokens, tokenizer):
 
 import re
 def clean(text):
-	text = re.sub("(<p>)+", "", text)
-	text = re.sub("(</p>)+", "", text)
-	text = re.sub("""(<imgsrc="23857019472"/>)+""", "", text)
-	text = re.sub("(&nbsp)+", "", text)
+	text = re.sub("(<p>;?)+", "", text)
+	text = re.sub("(</p>;?)+", "", text)
+	text = re.sub("""(<imgsrc="23857019472"/>;?)+""", "", text)
+	text = re.sub("(&nbsp;?)+", "", text)
+	text = re.
 	return text
 
 args = parser.parse_args()
@@ -206,7 +207,7 @@ def generate_text(text, ratio=0.8):
 		line = tokenization.convert_to_unicode(text)
 		line = clean(line)
 		print(line)
-		
+
 		bert_tokens = tokenizer.tokenize(line)
 		encoded = tokenizer.convert_tokens_to_ids(bert_tokens)
 		encoded_prefix = encoded[0:int(len(encoded)*ratio)]
