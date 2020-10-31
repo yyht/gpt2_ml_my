@@ -321,16 +321,6 @@ def embed(input_ids,
 
     return layer_norm(embedded_input, name='embed_norm'), embedding_table
 
-def sample_gumbel(shape, samples=1, eps=1e-20): 
-    """Sample from Gumbel(0, 1)"""
-    if samples > 1:
-        sample_shape = shape + [samples]
-    else:
-        sample_shape = shape
-    U = tf.random_uniform(shape, minval=0.00001, maxval=0.99998)
-    # return -tf.log(-tf.log(U + eps) + eps)
-    return -tf.log(-tf.log(U))
-
 def gumbel_sample(logits, num_samples):
     shape = get_shape_list(logits)
     if num_samples > 1:
@@ -340,7 +330,7 @@ def gumbel_sample(logits, num_samples):
     uniform_noise = tf.random.uniform(sample_shape, minval=0, maxval=1)
     gumbel_noise = -tf.log(-tf.log(uniform_noise + 1e-9) + 1e-9)
     return tf.argmax(tf.nn.softmax(logits + gumbel_noise), 1,
-                              output_type=tf.int32)
+                              output_type=tf.int32, keep_dims=True)
 
 def _top_p_sample(logits, ignore_ids=None, num_samples=1, p=0.9):
     """
