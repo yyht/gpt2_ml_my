@@ -163,8 +163,8 @@ session_conf = tf.ConfigProto(
               gpu_options=gpu_options)
 
 receiver_features = {
-    "initial_context":tf.placeholder(tf.int32, [None, None], name='initial_context'),
-    "p_for_topp":tf.placeholder(tf.int32, [None], name='p_for_topp'),
+    "initial_context":tf.placeholder(tf.int32, [1, None], name='initial_context'),
+    "p_for_topp":tf.placeholder(tf.int32, [1], name='p_for_topp'),
     "eos_token":tf.placeholder(tf.int32, [], name='eos_token'),
     "min_len":tf.placeholder(tf.int32, [], name='min_len'),
     "max_len":tf.placeholder(tf.int32, [], name='max_len'),
