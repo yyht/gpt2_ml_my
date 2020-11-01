@@ -288,32 +288,35 @@ def generate_text(text, ratio=0.8):
         context_formatted = []
         context_formatted.extend(encoded_prefix)
         start = time.time()
-        for i in range(args.samples):
-            print("Sample,", i + 1, " of ", args.samples)
-            # Format context end
-            gens = []
-            gens_raw = []
-            gen_probs = []
-            for chunk_i in range(num_chunks):
-                tokens_out, probs_out = sess.run([tokens, probs],
-                                                 feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
-                                                            eos_token: args.eos_token, 
-                                                            min_len: args.min_len,
-                                                            max_len: len(encoded),
-                                                            p_for_topp: top_p[chunk_i],
-                                                            k_for_topk: 1000})
+        if len(encoded) > 5:
+            for i in range(args.samples):
+                print("Sample,", i + 1, " of ", args.samples)
+                # Format context end
+                gens = []
+                gens_raw = []
+                gen_probs = []
+                for chunk_i in range(num_chunks):
+                    tokens_out, probs_out = sess.run([tokens, probs],
+                                                     feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
+                                                                eos_token: args.eos_token, 
+                                                                min_len: args.min_len,
+                                                                max_len: len(encoded),
+                                                                p_for_topp: top_p[chunk_i],
+                                                                k_for_topk: 1000})
 
-                for t_i, p_i in zip(tokens_out, probs_out):
-                    extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
-                    gens.append(extraction['extraction'])
-                    gen_probs.append(p_i)
+                    for t_i, p_i in zip(tokens_out, probs_out):
+                        extraction = extract_generated_target(output_tokens=t_i, tokenizer=tokenizer)
+                        gens.append(extraction['extraction'])
+                        gen_probs.append(p_i)
 
-            # l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
-            l = decode(gens[0])
-            output_lst.append(l)
-            prob_lst.append(gen_probs)
-        print(time.time()-start)
-    return line, output_lst, prob_lst, bert_tokens
+                # l = re.findall('.{1,70}', gens[0].replace('[UNK]', '').replace('##', ''))
+                l = decode(gens[0])
+                output_lst.append(l)
+                prob_lst.append(gen_probs)
+            print(time.time()-start)
+        return line, output_lst, prob_lst, bert_tokens
+    else:
+        return None, None, None, None
 
 def get_file_path(root_path, file_list, dir_list):
     dir_or_files = os.listdir(root_path)
@@ -344,21 +347,17 @@ def process(document):
     document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 
     context = "".join(document)
-    if len(context) < 5:
-        print("==skip==")
-        return 0
-
     clean_original, fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
 
-    for fake_sample, prob in zip(fake_samples, fake_probs):
-        output_dict = {
-            "clean_original":"".join(clean_original),
-            "gpt_generated":fake_sample,
-            "probs":prob[0].tolist()
-        }
-        fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
-    return 1
-
+    if not clean_original:
+        for fake_sample, prob in zip(fake_samples, fake_probs):
+            output_dict = {
+                "clean_original":"".join(clean_original),
+                "gpt_generated":fake_sample,
+                "probs":prob[0].tolist()
+            }
+            fwobj.write(json.dumps(output_dict, ensure_ascii=False)+"\n")
+        
 for input_file in file_list:
     document_len = 0
     with tf.gfile.GFile(input_file, "r") as reader:
