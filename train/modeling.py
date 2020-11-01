@@ -716,7 +716,10 @@ def export_model_fn_builder(config: GroverConfig, init_checkpoint):
 
     def model_fn(features, labels, mode, params):  # pylint: disable=unused-argument
         """The `model_fn` for TPUEstimator."""
-        initial_context = features["initial_context"]
+        sequence_mask = tf.to_int(tf.not_equal(features['initial_context'], 0))
+        
+        sequence_length = tf.reduce_sum(sequence_mask, axis=-1)
+        initial_context =  features["initial_context"][:, :sequence_length]
         eos_token = features["eos_token"]
         min_len = features["min_len"]
         max_len = features["max_len"]
