@@ -18,11 +18,22 @@ import json
 import math
 
 import six
-import tensorflow.compat.v1 as tf
+try:
+    import tensorflow.compat.v1 as tf
+except:
+    import tensorflow as tf
 
 from train import optimization_adafactor
 from train.utils import get_assignment_map_from_checkpoint, get_shape_list, get_attention_mask, gelu, layer_norm, dropout, \
     construct_scalar_host_call
+
+def check_tf_version():
+    version = tf.__version__
+    print("==tf version==", version)
+    if int(version.split(".")[0]) >= 2 or int(version.split(".")[1]) >= 15:
+        return True
+    else:
+        return False
 
 class GroverConfig(object):
     """Configuration for `GroverModel`"""
@@ -362,7 +373,10 @@ def _top_p_sample(logits, ignore_ids=None, num_samples=1, p=0.9):
             }
 
         # [batch_size, vocab_perm]
-        indices = tf.argsort(probs, direction='DESCENDING')
+        if check_tf_version():
+            indices = tf.argsort(probs, direction='DESCENDING')
+        else:
+            indices = tf.contrib.framework.argsort(probs, direction='DESCENDING')
         cumulative_probabilities = tf.math.cumsum(tf.batch_gather(probs, indices), axis=-1, exclusive=False)
 
         # find the top pth index to cut off. careful we don't want to cutoff everything!
@@ -406,7 +420,10 @@ def _top_k_sample(logits, ignore_ids=None, num_samples=1, k=10):
         probs = tf.nn.softmax(logits if ignore_ids is None else logits - tf.cast(ignore_ids[None], tf.float32) * 1e10,
                               axis=-1)
         # [batch_size, vocab_perm]
-        indices = tf.argsort(probs, direction='DESCENDING')
+        if check_tf_version():
+            indices = tf.argsort(probs, direction='DESCENDING')
+        else:
+            indices = tf.contrib.framework.argsort(probs, direction='DESCENDING')
 
         # find the top pth index to cut off. careful we don't want to cutoff everything!
         # result will be [batch_size, vocab_perm]
