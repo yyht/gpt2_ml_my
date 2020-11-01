@@ -289,6 +289,7 @@ def generate_text(text, ratio=0.8):
         context_formatted.extend(encoded_prefix)
         start = time.time()
         if len(encoded) > 5:
+            print("===process===")
             for i in range(args.samples):
                 print("Sample,", i + 1, " of ", args.samples)
                 # Format context end
@@ -327,7 +328,6 @@ def get_file_path(root_path, file_list, dir_list):
             get_file_path(dir_file_path, file_list, dir_list)
         else:
             file_list.append(dir_file_path)
-
 
 if os.path.isdir(args.input_path):
     file_list, dir_list = [], []
