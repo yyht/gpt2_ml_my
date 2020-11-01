@@ -349,7 +349,7 @@ def process(document):
     context = "".join(document)
     clean_original, fake_samples, fake_probs, bert_tokens = generate_text(context, 0.8)
 
-    if not clean_original:
+    if clean_original:
         for fake_sample, prob in zip(fake_samples, fake_probs):
             output_dict = {
                 "clean_original":"".join(clean_original),
