@@ -711,6 +711,41 @@ def model_fn_builder(config: GroverConfig, init_checkpoint, learning_rate,
 
     return model_fn
 
+def export_model_fn_builder(config: GroverConfig, init_checkpoint):
+    """Returns `model_fn` closure for TPUEstimator."""
+
+    def model_fn(features, labels, mode, params):  # pylint: disable=unused-argument
+        """The `model_fn` for TPUEstimator."""
+        initial_context = features["initial_context"]
+        eos_token = features["eos_token"]
+        min_len = features["min_len"]
+        max_len = features["max_len"]
+        p_for_topp = features["p_for_topp"]
+        k_for_topk = features["k_for_topk"]
+        tokens, probs = sample(config, initial_context, eos_token, min_len, max_len, ignore_ids=None, 
+            p_for_topp=p_for_topp, k_for_topk=k_for_topk,
+           do_topk=False)
+        tvars = tf.trainable_variables()
+        (assignment_map, initialized_variable_names
+             ) = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
+        tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
+        estimator_spec = tf.estimator.EstimatorSpec(
+                            mode=mode,
+                            predictions={
+                                        "tokens":tokens,
+                                        "probs":probs
+                            },
+                            export_outputs={
+                                "output":tf.estimator.export.PredictOutput(
+                                            {
+                                                "tokens":tokens,
+                                                "probs":probs
+                                            }
+                                        )
+                            }
+                )
+        return estimator_spec
+    return model_fn
 
 def sample_step(tokens, ignore_ids, news_config, batch_size=1, 
                 p_for_topp=0.95, k_for_topk=100, cache=None, do_topk=False):

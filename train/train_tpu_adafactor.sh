@@ -4,18 +4,18 @@ export PYTHONPATH=../
 
 learning_rate=1e-4
 init_checkpoint=""
-max_seq_length=1024
+max_seq_length=512
 save_checkpoint_steps=1000
 
 # You can customize the training here
 # mega, medium, or base
-model_type="mega"
+model_type="base"
 OUTPUT_DIR="gs://" # put your output directory here
 input_file="gs://" # put your input files here, it can also be something like "*.tfrecord"
 
 if [ ${model_type} == "base" ]; then
-    num_tpu_cores=32
-    batch_size_per_core=16
+    num_tpu_cores=8
+    batch_size_per_core=48
 elif [ ${model_type} == "medium" ]; then
     num_tpu_cores=128
     batch_size_per_core=4
