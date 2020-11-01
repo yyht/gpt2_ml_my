@@ -300,7 +300,7 @@ def generate_text(text, ratio=0.8):
                     tokens_out, probs_out = sess.run([tokens, probs],
                                                      feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
                                                                 eos_token: args.eos_token, 
-                                                                min_len: int(len(encoded)*0.9),
+                                                                min_len: int(len(encoded)*0.95),
                                                                 max_len: len(encoded),
                                                                 p_for_topp: top_p[chunk_i],
                                                                 k_for_topk: 1000})
