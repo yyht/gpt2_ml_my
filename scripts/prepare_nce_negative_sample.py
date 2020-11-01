@@ -314,9 +314,9 @@ def generate_text(text, ratio=0.8):
                 output_lst.append(l)
                 prob_lst.append(gen_probs)
             print(time.time()-start)
-        return line, output_lst, prob_lst, bert_tokens
-    else:
-        return None, None, None, None
+            return line, output_lst, prob_lst, bert_tokens
+        else:
+            return None, None, None, None
 
 def get_file_path(root_path, file_list, dir_list):
     dir_or_files = os.listdir(root_path)
