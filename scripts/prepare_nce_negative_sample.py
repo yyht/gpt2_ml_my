@@ -20,6 +20,9 @@ try:
 except ImportError:
     from tensorflow.python.util import deprecation_wrapper as deprecation
 deprecation._PER_MODULE_WARNING_LIMIT = 0
+
+os.environ["TF_XLA_FLAGS"] = "--tf_xla_auto_jit=2 --tf_xla_cpu_global_jit"
+
 #####
 
 parser = argparse.ArgumentParser(description='Contextual generation (aka given some metadata we will generate articles')
@@ -186,11 +189,11 @@ top_p = np.ones((num_chunks, batch_size_per_chunk), dtype=np.float32) * args.top
 
 graph = tf.Graph()
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5,
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3,
                                     allow_growth=False)
 session_conf = tf.ConfigProto(
               intra_op_parallelism_threads=8,
-              inter_op_parallelism_threads=0,
+              inter_op_parallelism_threads=8,
               allow_soft_placement=True,
               gpu_options=gpu_options)
 
