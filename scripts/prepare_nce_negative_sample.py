@@ -184,10 +184,18 @@ batch_size_per_chunk = int(np.ceil(args.batch_size / num_chunks))
 # This controls the top p for each generation.
 top_p = np.ones((num_chunks, batch_size_per_chunk), dtype=np.float32) * args.top_p
 
-tf_config = tf.ConfigProto(allow_soft_placement=True)
 graph = tf.Graph()
+
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5,
+                                    allow_growth=False)
+session_conf = tf.ConfigProto(
+              intra_op_parallelism_threads=8,
+              inter_op_parallelism_threads=0,
+              allow_soft_placement=True,
+              gpu_options=gpu_options)
+
 with graph.as_default():
-    sess = tf.Session(config=tf_config)
+    sess = tf.Session(config=session_conf)
     initial_context = tf.placeholder(tf.int32, [batch_size_per_chunk, None])
     p_for_topp = tf.placeholder(tf.float32, [batch_size_per_chunk])
     eos_token = tf.placeholder(tf.int32, [])
