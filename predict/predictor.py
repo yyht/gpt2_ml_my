@@ -10,7 +10,6 @@ import predict.distribution as distribution
 
 import sys
 import os
-import argparse
 import json
 import re
 import time
@@ -79,15 +78,17 @@ class PredictProcess(distribution.Process):
 			}
 
 	def process(self, in_data):
-		predictions = self.sess.run(
-			self.predictions, feed_dict={
-				self.input_dict[key]: in_data[key]
-				for key in self.input_dict})
+		with self.graph.as_default():
+			predictions = self.sess.run(
+				self.predictions, feed_dict={
+					self.input_dict[key]: in_data[key]
+					for key in self.input_dict})
 		ret = {}
 		for key, val in predictions.items():
 			ret[key] = val
 		return ret
 
 	def destroy(self):
-		self.sess.close()
+		with self.graph.as_default():
+			self.sess.close()
 

@@ -34,18 +34,18 @@ class Reader(Process):
         for schema in self.input_schema.split(","):
             name = schema.split(":")[0]
             self.input_tensor_names.append(name)
-            type = schema.split(":")[1]
+            schema_type = schema.split(":")[1]
             seq_len = int(schema.split(":")[2])
-            if type == "int":
+            if schema_type == "int":
                 tensor_type = tf.int64
                 default_value = 0
-            elif type == "float":
+            elif schema_type == "float":
                 tensor_type = tf.float32
                 default_value = 0.0
-            elif type == "str":
+            elif schema_type == "str":
                 tensor_type = tf.string
                 default_value = ''
-            elif type == "base64":
+            elif schema_type == "base64":
                 tensor_type = "base64"
                 default_value = "base64"
             else:
