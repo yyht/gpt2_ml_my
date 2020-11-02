@@ -312,7 +312,7 @@ def generate_text(text, ratio=0.8):
                                                      feed_dict={initial_context: [context_formatted] * batch_size_per_chunk,
                                                                 eos_token: args.eos_token, 
                                                                 min_len: int(len(encoded)*0.9),
-                                                                max_len: len(encoded),
+                                                                max_len: len(encoded)+10,
                                                                 p_for_topp: top_p[chunk_i],
                                                                 k_for_topk: 1000})
 
