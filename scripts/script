@@ -1,0 +1,1 @@
+PYTHONPATH=$(pwd) python scripts/prepare_nce_negative_sample.py -ckpt_fn /data/albert/mega_clue_vocab/model.ckpt-220000 -min_len 32 -samples 5 -input_path /data/albert/corpus/news2016zh_train.txt -output_path /data/albert/corpus_nce/pretrain_news2016zh_train -top_p 0.95
