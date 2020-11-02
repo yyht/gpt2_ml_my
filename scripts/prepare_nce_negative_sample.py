@@ -189,7 +189,7 @@ top_p = np.ones((num_chunks, batch_size_per_chunk), dtype=np.float32) * args.top
 
 graph = tf.Graph()
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2,
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.3,
                                     allow_growth=False)
 session_conf = tf.ConfigProto(
               intra_op_parallelism_threads=8,
