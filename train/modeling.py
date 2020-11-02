@@ -876,7 +876,7 @@ def sample(news_config: GroverConfig, initial_context, eos_token, min_len, max_l
         sequence_length = tf.cast(tf.cast(get_shape_list(ctx)[1], dtype=tf.float32)/0.8, dtype=tf.int32)
 
         tokens, cache, probs = tf.while_loop(
-            cond=cond, body=body, maximum_iterations=128,
+            cond=cond, body=body, maximum_iterations=196,
             loop_vars=[ctx, cache, probs],
             shape_invariants=[tf.TensorShape([batch_size, None]),
                               tf.TensorShape(
