@@ -282,7 +282,7 @@ def decode(input_tokens):
 
     return text.strip()
 
-def generate_text(text, ratio=0.8):
+def generate_text(text, ratio=0.75):
 
     output_lst = []
     prob_lst = []
