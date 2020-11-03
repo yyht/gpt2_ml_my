@@ -26,7 +26,7 @@ def process(document):
     document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 
     context = "".join(document)
-    if len(context) >= 5:
+    if len(context) >= 16:
         fwobj.write(context+"\n")
         
 def get_file_path(root_path, file_list, dir_list):
@@ -42,6 +42,7 @@ def get_file_path(root_path, file_list, dir_list):
 file_list, dir_list = [], []
 get_file_path("/data/albert/corpus", file_list, dir_list)
 print("==total file==", len(file_list))
+all_documents = [[]]
 
 for input_file in file_list:
     document_len = 0
