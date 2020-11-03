@@ -1,6 +1,7 @@
 import re
 import tensorflow as tf
 from urlextract import URLExtract
+import os, sys
 url_extract_api = URLExtract()
 
 fwobj = tf.gfile.GFile("/data/albert/my_chinese_pretrain.txt", "w")
