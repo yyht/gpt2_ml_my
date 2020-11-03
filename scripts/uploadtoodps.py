@@ -22,6 +22,7 @@ def process(document):
     init_len = 0
     index = 0
     document = "".join(document)
+    document = clean(document)
     sentences = re.split(r"([。!！?？；;])", document)
     document = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
 
